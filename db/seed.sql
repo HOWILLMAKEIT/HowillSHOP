@@ -1,10 +1,5 @@
 USE javaweb_shop;
 
-INSERT INTO users (username, password_hash, email, phone, role, status)
-VALUES
-  ('admin', '$2a$10$replace_with_bcrypt_hash', 'admin@example.com', '13800000000', 'MERCHANT', 1),
-  ('demo', '$2a$10$replace_with_bcrypt_hash', 'demo@example.com', '13900000000', 'CUSTOMER', 1);
-
 INSERT INTO categories (name, parent_id, sort_order, status)
 VALUES
   ('女装/男装/配饰', NULL, 1, 1),
