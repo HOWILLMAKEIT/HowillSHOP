@@ -1,0 +1,32 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# docs (local notes)
+docs/
+
+# build output
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# logs
+*.log
+
+# IDE/editor
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
