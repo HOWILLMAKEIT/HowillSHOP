@@ -17,7 +17,7 @@
 </div>
 
 <p align="center">
-  <img src="../assets/mainpage.png" alt="HowillSHOP 首页" width="860" />
+  <img src="assets/mainpage.png" alt="HowillSHOP 首页" width="860" />
 </p>
 
 ---
