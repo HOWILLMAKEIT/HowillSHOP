@@ -140,18 +140,17 @@ mvn -DskipTests package
 http://localhost:8080/shop
 ```
 
-## 上线部署指南（ECS + Nginx 反向代理）
+## 上线部署指南（ECS + Nginx + systemd）
 
 > 以阿里云 ECS 为例，使用 HTTP 反向代理（不启用 HTTPS）。
 
-### 1) 服务器规格建议
+### 0) 购买与安全组
 
-- 2 核 4G 起步（小流量）
-- 系统盘 40GB+
+- 2 核 4G 起步（小流量），系统盘 40GB+
 - 系统：Alibaba Cloud Linux 3 / Ubuntu 22.04
 - 安全组放行：22、80（如需直连 Tomcat 再放行 8080）
 
-### 2) 安装 JDK 与 Tomcat
+### 1) 安装 JDK 11、Tomcat 9
 
 ```bash
 # Alibaba Cloud Linux / CentOS
@@ -162,7 +161,14 @@ tar -xzf apache-tomcat-9.0.113.tar.gz
 ln -s apache-tomcat-9.0.113 tomcat
 ```
 
-### 3) 安装 MySQL 并导入脚本
+### 2) 创建 tomcat 用户并授权（推荐）
+
+```bash
+sudo useradd -r -m -U -d /opt/tomcat -s /bin/false tomcat
+sudo chown -R tomcat:tomcat /opt/tomcat
+```
+
+### 3) MySQL 初始化
 
 ```bash
 mysql -u root -p < /path/db/schema.sql
@@ -175,18 +181,46 @@ mysql -u root -p javaweb_shop < /path/db/seed.sql
 scp target/howill-shop-1.0.0.war root@服务器IP:/opt/tomcat/webapps/shop.war
 ```
 
-### 5) 配置 .env 并让 Tomcat 读取
+### 5) 配置 .env
 
-将 `.env` 上传到服务器，比如 `/opt/shop/.env`，然后在 Tomcat 的 `setenv.sh` 中指定：
+将 `.env` 上传到服务器，比如 `/opt/shop/.env`。
 
-```bash
-echo 'export JAVA_OPTS="-Denv.file=/opt/shop/.env"' | sudo tee /opt/tomcat/bin/setenv.sh
+### 6) 使用 systemd 管理 Tomcat
+
+创建 `/etc/systemd/system/tomcat.service`：
+
+```ini
+[Unit]
+Description=Apache Tomcat 9
+After=network.target
+
+[Service]
+Type=forking
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=/usr/lib/jvm/java-11-openjdk"
+Environment="CATALINA_HOME=/opt/tomcat"
+Environment="CATALINA_BASE=/opt/tomcat"
+Environment="CATALINA_PID=/opt/tomcat/temp/tomcat.pid"
+Environment="JAVA_OPTS=-Denv.file=/opt/shop/.env"
+
+ExecStart=/opt/tomcat/bin/startup.sh
+ExecStop=/opt/tomcat/bin/shutdown.sh
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-### 6) 启动 Tomcat
-
+启用并启动：
 ```bash
-/opt/tomcat/bin/startup.sh
+sudo systemctl daemon-reload
+sudo systemctl enable tomcat
+sudo systemctl start tomcat
+sudo systemctl status tomcat
 ```
 
 此时 Tomcat 地址为：
@@ -228,6 +262,8 @@ sudo systemctl reload nginx
 ```
 http://你的域名/
 ```
+
+
 
 ## 目录结构
 
