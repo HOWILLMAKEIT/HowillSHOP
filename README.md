@@ -128,9 +128,98 @@ http://localhost:8080/shop/products
 mvn -DskipTests package
 ```
 
-将 `target/javaweb-shop-1.0-SNAPSHOT.war` 放入 Tomcat 的 `webapps/`，可重命名为 `shop.war`：
+将 `target/howill-shop-1.0.0.war` 放入 Tomcat 的 `webapps/`，可重命名为 `shop.war`：
 ```
 http://localhost:8080/shop
+```
+
+## 上线部署指南（ECS + Nginx 反向代理）
+
+> 以阿里云 ECS 为例，使用 HTTP 反向代理（不启用 HTTPS）。
+
+### 1) 服务器规格建议
+
+- 2 核 4G 起步（小流量）
+- 系统盘 40GB+
+- 系统：Alibaba Cloud Linux 3 / Ubuntu 22.04
+- 安全组放行：22、80（如需直连 Tomcat 再放行 8080）
+
+### 2) 安装 JDK 与 Tomcat
+
+```bash
+# Alibaba Cloud Linux / CentOS
+sudo yum -y install java-11-openjdk wget
+cd /opt
+wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.113/bin/apache-tomcat-9.0.113.tar.gz
+tar -xzf apache-tomcat-9.0.113.tar.gz
+ln -s apache-tomcat-9.0.113 tomcat
+```
+
+### 3) 安装 MySQL 并导入脚本
+
+```bash
+mysql -u root -p < /path/db/schema.sql
+mysql -u root -p javaweb_shop < /path/db/seed.sql
+```
+
+### 4) 上传 WAR
+
+```bash
+scp target/howill-shop-1.0.0.war root@服务器IP:/opt/tomcat/webapps/shop.war
+```
+
+### 5) 配置 .env 并让 Tomcat 读取
+
+将 `.env` 上传到服务器，比如 `/opt/shop/.env`，然后在 Tomcat 的 `setenv.sh` 中指定：
+
+```bash
+echo 'export JAVA_OPTS="-Denv.file=/opt/shop/.env"' | sudo tee /opt/tomcat/bin/setenv.sh
+```
+
+### 6) 启动 Tomcat
+
+```bash
+/opt/tomcat/bin/startup.sh
+```
+
+此时 Tomcat 地址为：
+```
+http://服务器IP:8080/shop
+```
+
+### 7) 安装并配置 Nginx（HTTP 反向代理）
+
+```bash
+sudo yum -y install nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx
+```
+
+在 `/etc/nginx/conf.d/shop.conf` 写入：
+
+```nginx
+server {
+    listen 80;
+    server_name 你的域名或公网IP;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080/shop/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+访问：
+```
+http://你的域名/
 ```
 
 ## 目录结构
