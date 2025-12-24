@@ -1,5 +1,5 @@
 <div align="center">
-  <h2>HowillSHOP 小昊商城</h2>
+  <h1>HowillSHOP 小昊商城</h2>
   <p>基于 Java Web 的多角色电商项目（消费者 / 商家）</p>
   <p>
     <img src="https://img.shields.io/badge/JAVA-11-000000?style=flat-square&labelColor=000000&color=000000" alt="Java 11" />
