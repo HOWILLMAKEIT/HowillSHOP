@@ -478,8 +478,10 @@ public class OrderDao {
     }
 
     public Optional<OrderMailInfo> findOrderMailInfo(long orderId) throws SQLException {
-        String sql = "SELECT o.order_no, u.email FROM orders o " +
-                "JOIN users u ON o.user_id = u.id WHERE o.id = ?";
+        String sql = "SELECT o.order_no, u.email, m.username AS merchant_name FROM orders o " +
+                "JOIN users u ON o.user_id = u.id " +
+                "LEFT JOIN users m ON o.merchant_id = m.id " +
+                "WHERE o.id = ?";
         try (Connection conn = dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, orderId);
@@ -487,7 +489,8 @@ public class OrderDao {
                 if (rs.next()) {
                     return Optional.of(new OrderMailInfo(
                             rs.getString("order_no"),
-                            rs.getString("email")
+                            rs.getString("email"),
+                            rs.getString("merchant_name")
                     ));
                 }
             }

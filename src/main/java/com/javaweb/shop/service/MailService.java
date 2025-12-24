@@ -8,11 +8,16 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import com.javaweb.shop.model.OrderItem;
+
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Properties;
 
 // 发货邮件发送服务
@@ -23,7 +28,9 @@ public class MailService {
         this.mailProps = loadProperties();
     }
 
-    public void sendShipmentEmail(String toEmail, String orderNo) throws ValidationException {
+    public void sendShipmentEmail(String toEmail, String orderNo, String merchantName,
+                                  List<OrderItem> items, LocalDateTime shippedAt)
+            throws ValidationException {
         if (toEmail == null || toEmail.isBlank()) {
             throw new ValidationException("用户邮箱为空。");
         }
@@ -32,12 +39,41 @@ public class MailService {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mailProps.getProperty("mail.from")));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject("订单已发货");
-            message.setText("您的订单 " + orderNo + " 已发货。");
+            message.setSubject("订单已发货通知");
+            message.setText(buildShipmentContent(orderNo, merchantName, items, shippedAt));
             Transport.send(message);
         } catch (Exception ex) {
             throw new ValidationException("邮件发送失败。");
         }
+    }
+
+    private String buildShipmentContent(String orderNo, String merchantName,
+                                        List<OrderItem> items, LocalDateTime shippedAt) {
+        String displayMerchant = isBlank(merchantName) ? "商家" : merchantName;
+        String timeText = shippedAt == null ? "已发货"
+                : shippedAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        StringBuilder content = new StringBuilder();
+        content.append("您好，感谢您在 HowillSHOP 小昊商城 购物！").append("\n\n");
+        content.append("您的订单已发货，详情如下：").append("\n");
+        content.append("订单号：").append(orderNo).append("\n");
+        content.append("发货时间：").append(timeText).append("\n");
+        content.append("发货店铺：").append(displayMerchant).append("\n\n");
+
+        content.append("发货商品：").append("\n");
+        if (items == null || items.isEmpty()) {
+            content.append("- 请在订单详情中查看商品明细").append("\n");
+        } else {
+            for (OrderItem item : items) {
+                content.append("- ")
+                        .append(item.getProductName())
+                        .append(" × ")
+                        .append(item.getQuantity())
+                        .append("\n");
+            }
+        }
+        content.append("\n如有问题，请联系发货店铺或 HowillSHOP 小昊商城 客服。");
+        return content.toString();
     }
 
     private Session buildSession() {

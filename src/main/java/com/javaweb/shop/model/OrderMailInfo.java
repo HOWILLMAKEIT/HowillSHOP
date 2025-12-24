@@ -4,10 +4,12 @@ package com.javaweb.shop.model;
 public class OrderMailInfo {
     private final String orderNo;
     private final String email;
+    private final String merchantName;
 
-    public OrderMailInfo(String orderNo, String email) {
+    public OrderMailInfo(String orderNo, String email, String merchantName) {
         this.orderNo = orderNo;
         this.email = email;
+        this.merchantName = merchantName;
     }
 
     public String getOrderNo() {
@@ -16,5 +18,9 @@ public class OrderMailInfo {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getMerchantName() {
+        return merchantName;
     }
 }

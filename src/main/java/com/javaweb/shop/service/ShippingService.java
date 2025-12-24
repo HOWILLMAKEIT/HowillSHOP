@@ -1,9 +1,12 @@
 package com.javaweb.shop.service;
 
 import com.javaweb.shop.dao.OrderDao;
+import com.javaweb.shop.model.OrderItem;
 import com.javaweb.shop.model.OrderMailInfo;
 
+import java.time.LocalDateTime;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 // 发货状态更新与邮件通知
@@ -41,7 +44,14 @@ public class ShippingService {
             throw new ValidationException("订单邮箱信息不存在。");
         }
 
-        mailService.sendShipmentEmail(mailInfo.get().getEmail(), mailInfo.get().getOrderNo());
+        List<OrderItem> items = orderDao.listOrderItems(orderId);
+        mailService.sendShipmentEmail(
+                mailInfo.get().getEmail(),
+                mailInfo.get().getOrderNo(),
+                mailInfo.get().getMerchantName(),
+                items,
+                LocalDateTime.now()
+        );
         orderDao.updateEmailSentAt(orderId);
     }
 }
