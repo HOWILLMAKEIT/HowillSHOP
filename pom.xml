@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.javaweb</groupId>
-    <artifactId>javaweb-shop</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>howill-shop</artifactId>
+    <version>1.0.0</version>
     <packaging>war</packaging>
 
     <properties>
