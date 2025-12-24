@@ -103,14 +103,21 @@ mvn -DskipTests compile
 
 在 `TOMCAT_HOME/conf/Catalina/localhost/shop.xml` 新建：
 ```xml
-<Context docBase="G:/project/javaweb/src/main/webapp" reloadable="true">
+<Context docBase="YOUR_PROJECT_PATH/src/main/webapp" reloadable="true">
   <Resources className="org.apache.catalina.webresources.StandardRoot">
     <PreResources className="org.apache.catalina.webresources.DirResourceSet"
-                  base="G:/project/javaweb/target/classes"
+                  base="YOUR_PROJECT_PATH/target/classes"
                   webAppMount="/WEB-INF/classes" />
   </Resources>
 </Context>
 ```
+说明：
+- `docBase` 是你的本地 Web 根目录（JSP/静态资源），这里用的是**绝对路径**，需要改成你电脑上的实际路径。
+- `PreResources` 把 `target/classes` 映射到 `/WEB-INF/classes`，Tomcat 会优先加载这里的最新 class。
+- 修改 Java 后重新执行 `mvn -DskipTests compile`，Tomcat 会自动加载新 class。
+- 依赖库（`WEB-INF/lib`）不会从 `target/classes` 自动更新；**首次配置或依赖变更时**需确保 `src/main/webapp/WEB-INF/lib` 有最新依赖。
+  - 简单做法：执行一次 `mvn -DskipTests package`（会把依赖打入 WAR）
+  - 或手动同步依赖：`mvn -DskipTests dependency:copy-dependencies -DoutputDirectory=src/main/webapp/WEB-INF/lib`
 
 启动 Tomcat：
 ```
