@@ -243,8 +243,14 @@ server {
     listen 80;
     server_name 你的域名或公网IP;
 
-    location / {
-        proxy_pass http://127.0.0.1:8080/shop/;
+    # 访问根路径时跳转到应用上下文
+    location = / {
+        return 302 /shop/;
+    }
+
+    # 注意：proxy_pass 不带路径，避免资源路径重复
+    location /shop/ {
+        proxy_pass http://127.0.0.1:8080;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
