@@ -20,6 +20,10 @@
   <img src="assets/mainpage.png" alt="HowillSHOP 首页" width="860" />
 </p>
 
+姓名:郭昊
+班级：23网路工程
+学号：202330450471
+
 ---
 
 <p align="center" style="margin-top: -8px;">
@@ -284,6 +288,4 @@ src/main/java/com/javaweb/shop
   └── util/                 # 工具类
 src/main/resources           # db/mail/oss 配置
 src/main/webapp              # JSP 页面、静态资源、WEB-INF
-docs/                        # 项目文档
-assets/                      # README 展示图片
 ```
