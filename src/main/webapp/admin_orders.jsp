@@ -75,7 +75,7 @@
                     <option value="COMPLETED" <%= "COMPLETED".equals(selectedStatus) ? "selected" : "" %>>已完成</option>
                 </select>
                 <button type="submit">筛选</button>
-                <a class="btn secondary" href="${pageContext.request.contextPath}/index.jsp">返回首页</a>
+                <a class="btn secondary" href="${pageContext.request.contextPath}/products">返回首页</a>
             </form>
 
 <% if (orders == null || orders.isEmpty()) { %>

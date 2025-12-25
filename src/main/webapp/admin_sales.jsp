@@ -20,7 +20,7 @@
                     <h1>销售统计</h1>
                     <div class="muted">统计已支付订单的趋势与商品销量</div>
                 </div>
-                <a class="btn secondary" href="${pageContext.request.contextPath}/index.jsp">返回首页</a>
+                <a class="btn secondary" href="${pageContext.request.contextPath}/products">返回首页</a>
             </div>
 <%
     String startDate = (String) request.getAttribute("startDate");

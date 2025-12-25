@@ -20,7 +20,7 @@
                     <h1>商品管理</h1>
                     <div class="muted">维护商品目录、价格与库存</div>
                 </div>
-                <a class="btn secondary" href="${pageContext.request.contextPath}/index.jsp">返回首页</a>
+                <a class="btn secondary" href="${pageContext.request.contextPath}/products">返回首页</a>
             </div>
             <div class="message">${requestScope.message}</div>
             <div class="error">${requestScope.error}</div>
