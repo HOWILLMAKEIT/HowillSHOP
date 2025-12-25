@@ -20,6 +20,10 @@
   <img src="assets/mainpage.png" alt="HowillSHOP 首页" width="860" />
 </p>
 
+<p align="center">
+  <img src="assets/基本架构.png" alt="HowillSHOP 基本架构" width="860" />
+</p>
+
 姓名:郭昊
 班级：23网路工程
 学号：202330450471
